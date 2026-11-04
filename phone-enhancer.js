@@ -29,12 +29,26 @@ document.addEventListener('DOMContentLoaded', () => {
     { label:'Q&A, trivia & quiz', html:`<p class="eyebrow">TURN THE PAGE · TEST YOUR MEMORY</p><h2>Quick Q&A</h2><dl><dt>What school does Alfie attend?</dt><dd>Starlight Performing Arts High School in New York.</dd><dt>What instruments does he play?</dt><dd>Guitar and piano; he also sings and writes songs.</dd><dt>What is his girlfriend's name?</dt><dd>Charlotte Sanders, who attends a different school.</dd><dt>What is the island school?</dt><dd>Momos Academy for Boys, on fictional Momosu Island.</dd><dt>What award goals does he have?</dt><dd>A SAG Award and, someday, an EGOT.</dd></dl><h3>Trivia</h3><ul><li>His first TV appearances were commercials when he was a baby.</li><li>Tobias encouraged his music and hosting interests.</li><li>He still likes discreet airport exits, even though he is more comfortable with crowds now.</li><li>Anne-Marie the Persian cat has a habit of sitting on scripts.</li></ul><h3>Reader quiz</h3><p>Which sibling encouraged Alfie to explore music and hosting?</p><div class="quiz"><button data-answer="no">Alistair</button><button data-answer="yes">Tobias</button><button data-answer="no">Valerie</button><p aria-live="polite">Choose an answer.</p></div><p class="smallprint">Answers and facts on this page refer to the fictional AU issue only.</p>` }
   ];
 
+  // Keep the home screen compact so the fourth row of apps (Beacon, Wikipedia, Spotlight) sits fully on screen.
+  const homeStyle = document.createElement('style');
+  homeStyle.textContent = `.home{min-height:0;overflow:hidden}.app-grid{gap:9px 6px;margin-top:auto}.app-icon{color:#fff;font-size:9px}.app-icon .icon-tile{flex:none}
+    @media(max-height:860px){.home{gap:8px}.clock{font-size:46px}.widget{min-height:62px;padding:8px}}
+    @media(max-height:760px){.home{gap:6px;padding-bottom:16px}.clock{font-size:40px}.widget{min-height:54px}.widget p{display:none}.app-grid{gap:7px 6px}.icon-tile{width:40px;height:40px;font-size:21px}}`;
+  document.head.appendChild(homeStyle);
+
   function openView(id, label, title, mode) {
     if (document.querySelector(`[data-app="${id}"]`)) return;
     const icon = document.createElement('button');
     icon.className = 'app-icon';
     icon.dataset.app = id;
-    icon.innerHTML = `<span class="icon-tile" style="background:linear-gradient(145deg,#fff1ce,#c99b61)">${id === 'newspaper' ? '📰' : id === 'magazine' ? '📖' : 'W'}</span>${label}`;
+    const tiles = {
+      newspaper: ['linear-gradient(145deg,#ff8a5c,#c4302b)', '📰', ''],
+      wiki: ['linear-gradient(#ffffff,#dfe3ea)', 'W', 'color:#202122;font:700 25px Georgia,serif'],
+      magazine: ['linear-gradient(145deg,#ffd36e,#e0569b 55%,#7a3cc4)', '✦', 'color:#fff;font-size:23px']
+    };
+    const [bg, glyph, extra] = tiles[id] || tiles.newspaper;
+    icon.innerHTML = `<span class="icon-tile" style="background:${bg};${extra}">${glyph}</span>${label}`;
+    icon.setAttribute('aria-label', label);
     grid.appendChild(icon);
 
     const view = document.createElement('section');
