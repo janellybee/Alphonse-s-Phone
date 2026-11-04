@@ -1,56 +1,15 @@
 # Alfie's iPhone 17 — Interactive AU Story
 
-A responsive, clickable fictional iPhone for Alphonse “Alfie” Benjamin Summers, a 16-year-old Canadian-American actor and Starlight Performing Arts High School sophomore in New York. Open `index.html` directly or host it through GitHub Pages or a static front-end host.
+A responsive, clickable fictional iPhone for Alphonse “Alfie” Benjamin Summers, a 16-year-old Canadian-American actor and Starlight Performing Arts High School sophomore in New York. Open `index.html` directly or host it with GitHub Pages; no build step or external dependencies are required.
 
-## Screen lock
+## Local story interaction
 
-The phone has an in-universe story lock that unlocks with the passcode `2106`, which is the birthday reference for the AU.
+This version intentionally does **not** call a live AI service. `story-engine.js` provides varied, authored, intent-aware dialogue for readers' messages and comments. It recognizes topics like Charlotte, the Summers family, the Stellaris ring, Starlight, production staff and co-stars, fans, antagonists, anxiety, pets, food/allergies, and music. If a message is too vague to answer accurately, Alfie asks for context rather than pretending he understood. Recent answers are tracked locally to reduce back-to-back repetition.
 
-## Live AI setup for the real 5-minute updates
+Every five minutes while the page is open, a different authored story beat from characters around Alfie is added to Discord. Some beats also create a school blog update. Reader messages are never overwritten by the periodic story beat. The beat sequence rotates through Charlotte, co-stars, his manager, family, the ring mystery, crew, fans, and the emerging antagonist thread. Since the page is static, this is a scripted story rotation—not live AI or a server-generated update.
 
-This project is prepared for a secure live-AI backend without exposing a secret API key in the browser. The safe pattern is:
+Reader chat and journal content are stored in the browser's local storage. The phone lock PIN `2106` is a fictional UI detail, not real device security. `config.js` disables the unused live API endpoints by default and loads the local story engine.
 
-- front-end calls a backend endpoint like `/api/message` or `/api/story`
-- backend holds the AI key in a secret environment variable
-- front-end only sees the response text from the Worker
+## Explore
 
-The repo already includes a Cloudflare Worker scaffold in `worker.js` and `wrangler.toml`.
-
-## Configure the Worker URL
-
-1. Deploy the Worker to Cloudflare:
-
-   ```bash
-   npm install -g wrangler
-   wrangler login
-   wrangler deploy
-   ```
-
-2. Set your OpenAI key safely as a secret:
-
-   ```bash
-   wrangler secret put OPENAI_API_KEY
-   ```
-
-3. Open `config.js` and replace the placeholder URL with your deployed Worker domain.
-
-   Example:
-
-   ```js
-   window.STORY_API_URL = 'https://alfie-story-worker.your-name.workers.dev/api/story';
-   window.STORY_MESSAGE_API_URL = 'https://alfie-story-worker.your-name.workers.dev/api/message';
-   ```
-
-4. Because this is a static page, there is no secret key in the browser. The browser only fetches the backend responses.
-
-## Local fallback
-
-If no backend is configured, the app automatically falls back to locally authored in-character dialogue. That keeps the story playable with no live service required.
-
-## Publishing
-
-1. Publish the front end to GitHub Pages or any static host.
-2. Make sure the Cloudflare Worker is live and reachable.
-3. Keep the API key secret in the Worker, never in the browser.
-
-The app includes Discord, a Starlight school blog, anonymous forum posts, journal, calendar, music, contacts, and chat. The story is fictional and can be edited directly in `index.html` or the Worker prompt logic.
+Tap the apps to browse Messages, Discord, Calendar, Photos, Music, Journal, the Starlight school blog, anonymous forums, Ask Alfie, Contacts, Clock, Phone, Mail, and About Alfie. All story and character material is fictional and editable in `index.html` and `story-engine.js`.
