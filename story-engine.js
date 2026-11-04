@@ -1,43 +1,20 @@
-/* Local character dialogue. Answers known facts directly; asks rather than invents when unsure. */
+/* Offline fallback dialogue, used only when the live Alfie API can't be reached. */
 (() => {
   'use strict';
   const KEY = 'alfie-smart-dialogue-v1';
   const LAST = 'alfie-last-topic-v1';
   const facts = {
-    charlotte: {
-      name: 'Charlotte',
-      lines: ["Charlotte notices when I'm pretending I'm fine. It's kind of annoying how good she is at that. I'm glad she's around.", "She's easy to be with. I don't have to turn every conversation into an interview.", "I was going to ask her to get food after rehearsal and somehow made that complicated in my head."]
-    },
-    family: {
-      lines: ["My parents are Joanne and Dakota. My siblings are Tobias, Alistair, Valerie, twins Keira and Elias, and Liliana.", "There are six of us kids. The family chat is mostly scheduling and food photos. I miss the noise when I'm away.", "I love them. I also mute the group chat when I have homework. Both things can be true."]
-    },
-    ring: {
-      lines: ["I found the ring after the wrap party and thought it was a prop. Then it lit up and those jellyfish-shaped things showed up. Still working on a normal explanation.", "The archivist knows more than I do. I'm trying to ask questions before I touch anything else.", "I don't know what Stellaris wants from me yet. 'Don't test mysterious powers in public' seems like a decent rule."]
-    },
-    school: {
-      lines: ["Starlight is my performing-arts high school. I like that people there care about the work, not just who got recognized in a hallway.", "School and work overlap a lot. The teachers understand the schedule, but assignments are still due. Fair, honestly.", "Rehearsal was fine. I only left my script in the black box once. That's progress."]
-    },
-    work: {
-      lines: ["The crew do a lot that never makes it on screen. I try to learn names and say thanks, even if I'm bad at the first part.", "My co-stars make long days easier. Mostly we trade snacks and complain about call times.", "The costume team are brilliant. I owe them an apology for assuming that ring was one of their props."]
-    },
-    pets: {
-      lines: ["Anne-Marie is my Persian cat, Dex is a chihuahua, Joyce is a teacup Pom, and Mayfield is my horse.", "Anne-Marie sits on my scripts. Dex barks at the delivery person. Joyce is tiny and somehow louder than both of us."]
-    },
-    food: {
-      lines: ["Donuts and poutine are excellent post-rehearsal plans. I'm not claiming either is a balanced dinner.", "I like fruit mochi, apple pie, and soufflé pancakes. I'm allergic to seafood, so I check ingredients.", "I like spicy food, then immediately regret being so confident about the spice level. Every time."]
-    },
-    music: {
-      lines: ["Guitar helps me get out of my head after work. Sometimes I write a song; sometimes I play the same four chords until I'm less tense.", "I keep half-finished lyrics in my journal. A surprising number are about missing home and wanting a snack.", "Piano's good when I need to slow down. Guitar's good when I need to make noise."]
-    },
-    anxiety: {
-      lines: ["That sounds like a lot to carry. Do you want to tell me what part is weighing on you most?", "When I get overwhelmed, I try to make the next minute smaller instead of thinking about the whole week.", "You don't have to pretend you're fine. If you might be in immediate danger, please contact someone you trust nearby or local emergency support."]
-    },
-    fans: {
-      lines: ["I'm grateful people care about the work. I get awkward when someone recognizes me, but I never want them to think I'm annoyed.", "I can't answer every message, but I do read a lot when I get a quiet minute. Some have made a rough day better."]
-    },
-    unclear: {
-      lines: ["I don't want to guess and give you the wrong answer. Can you say a little more about what you mean?", "I might be missing the context—what happened right before that?", "Wait, which part are you asking about? I want to answer the actual question."]
-    }
+    charlotte: { lines: ["charlotte always knows when i'm faking being fine. it's annoying. i love her", "she goes to a different school so we mostly see each other weekends. and facetime way too late", "i was gonna ask her to get food after rehearsal and somehow overthought it for an hour"] },
+    family: { lines: ["mom and dad are joanne and dakota. siblings are tobias, alistair, valerie, the twins keira and elias, and liliana", "the family chat is like 90% food pics and arguing about dinner", "i miss home a lot ngl. vancouver just feels different"] },
+    ring: { lines: ["the ring thing is... a lot. i thought it was a prop. it's not", "idk what it is yet. trying not to touch it more than i have to", "long story. i'll tell you when i actually understand it"] },
+    school: { lines: ["starlight's good. people actually care about the work there", "school and set overlap way too much. teachers are chill about it but homework's still due lol", "rehearsal ran late again. i'm so tired"] },
+    work: { lines: ["crew does so much and nobody notices. i try to learn everyone's names, i'm just bad at it", "long set day. maya and i survived on crackers", "wardrobe says the ring isn't theirs which is not what i wanted to hear"] },
+    pets: { lines: ["anne-marie's my persian cat, dex is a chihuahua, joyce is a teacup pom, and mayfield is my horse", "anne-marie is sitting on my script rn. i guess i'm not studying"] },
+    food: { lines: ["donuts and poutine. not a balanced dinner but it's what i want", "mochi, apple pie, souffle pancakes. no seafood, i'm allergic", "i always think i can handle spicy food and i never can"] },
+    music: { lines: ["i've been playing the same four chords for an hour. it helps", "i have like 30 half-finished songs in my notes app", "piano when i need to calm down, guitar when i need to be loud"] },
+    anxiety: { lines: ["that sounds really heavy. what's the worst part of it right now?", "i get like that too. making the next five minutes smaller helps me a bit", "you don't have to pretend you're fine. if you're not safe right now please reach out to someone near you, or call/text 988"] },
+    fans: { lines: ["it's still so weird when people recognize me. good weird. mostly", "i can't reply to everything but i do read stuff when i get a minute"] },
+    unclear: { lines: ["wait what do you mean", "sorry i'm half paying attention, rehearsal. say that again?", "lol ok", "huh. tell me more"] }
   };
   const patterns = [
     ['allergy', /seafood|allerg(y|ic|ies)/],
@@ -72,7 +49,7 @@
     const intent = questionMatchers.find(([re]) => re.test(q))?.[1];
     const direct = {
       familyNames: "My parents are Joanne and Dakota. My siblings are Tobias, Alistair, Valerie, Keira, Elias, and Liliana.",
-      siblingsCount: "There are six of us kids: Tobias, Alistair, Valerie, me, and the twins Keira and Elias, plus Liliana—wait, that's seven including me. I always mess up counting when I say it fast.",
+      siblingsCount: "six siblings. seven of us kids total. it's loud",
       petNames: "Anne-Marie is the Persian cat, Dex is the chihuahua, Joyce is the teacup Pom, and Mayfield is my horse.",
       allergy: "Seafood. I'm allergic, so I check ingredients instead of guessing.",
       school: "I go to Starlight Performing Arts High School in New York.",
@@ -82,9 +59,9 @@
       charlotte: "Charlotte's my girlfriend. We know each other through school and theatre; she has a talent for noticing when I'm not okay."
     };
     if (intent) return direct[intent];
-    if (/^(hi|hello|hey|good morning|good evening)\b/i.test(q.trim())) return "Hey! What's up?";
-    if (/\b(thank you|thanks)\b/i.test(q)) return "You're welcome. Thanks for telling me. What else is on your mind?";
-    if (/\b(i (like|love|enjoy)|my favorite|my favourite)\b/i.test(q)) return `Oh, nice. What do you like most about it? I'm into ${topic === 'music' ? 'guitar and piano' : topic === 'food' ? 'mochi and poutine' : 'theatre and music'}, so I get having a thing you really enjoy.`;
+    if (/^(hi|hello|hey|good morning|good evening)\b/i.test(q.trim())) return "hey whats up";
+    if (/\b(thank you|thanks)\b/i.test(q)) return "np";
+    if (/\b(i (like|love|enjoy)|my favorite|my favourite)\b/i.test(q)) return "oh nice. what got you into it?";
     if (/\b(what do you think|should i|any advice|what should i do)\b/i.test(q) && topic === 'anxiety') return "I can't know the perfect answer from one message. Could you tell someone you trust what’s going on, and what feels like the hardest part right now?";
     return null;
   }
@@ -115,54 +92,29 @@
     return answer;
   };
 
-  // Capture forms before the older inline handlers, preserving a small chat context.
-  document.addEventListener('submit', (event) => {
-    const form = event.target;
-    if (!['message-form', 'ask-form', 'discord-form'].includes(form?.id)) return;
-    event.preventDefault(); event.stopImmediatePropagation();
-    const input = form.querySelector('input');
-    const text = input?.value.trim();
-    if (!text) return;
-    input.value = '';
-    const message = { text, topic: classify(text), at: Date.now() };
-    const state = (() => { try { return JSON.parse(sessionStorage.getItem('alfie-conversation') || '[]'); } catch (_) { return []; } })();
-    state.push(message); sessionStorage.setItem('alfie-conversation', JSON.stringify(state.slice(-12)));
-    const answer = window.localReply(text, form.id === 'discord-form' && /charlotte/i.test(text) ? 'Charlotte' : 'Alfie');
-    if (form.id === 'message-form') {
-      const list = document.querySelector('#chat-list');
-      for (const [from, value] of [['me', text], ['them', answer]]) {
-        const bubble = document.createElement('div'); bubble.className = `bubble ${from}`; bubble.textContent = value; list.appendChild(bubble);
-      }
-      list.scrollTop = list.scrollHeight;
-    } else {
-      const area = form.id === 'ask-form' ? document.querySelector('#ask-replies') : document.querySelector('#discord-chat');
-      const add = (label, value) => { const p = document.createElement(form.id === 'ask-form' ? 'div' : 'p'); p.className = form.id === 'ask-form' ? 'reply' : ''; p.textContent = `${label}: ${value}`; area.appendChild(p); };
-      add('You', text); add(form.id === 'ask-form' ? 'Alfie' : 'Alfie', answer);
-    }
-  }, true);
+  // Form handling lives in alfie-live.js; this file only provides offline fallback lines.
 
+  // Occasional background chatter in the Discord server so it feels lived-in.
   const beats = [
-    ['Charlotte', 'You left your water bottle in the rehearsal room. I put it by the stage door. Again.'],
-    ['Maya · co-star', 'They moved the prop table. Your script is safe. The ring-shaped thing is not on it, just so you know.'],
-    ['Riley · manager', 'Call time is still 10 tomorrow. I cleared the morning so you can get to Starlight first.'],
-    ['Joanne · Mom', 'Your siblings are arguing over dinner in the family chat. Call when you finish homework?'],
-    ['Alfie', 'Quick question: is a “prop” supposed to get warm when nobody has touched it? Asking for a friend. The friend is me.'],
-    ['Costume team', 'Small mystery: nobody in wardrobe recognizes the ring you described. We did not make it.'],
-    ['Charlotte', 'You went quiet after rehearsal. No pressure to explain over text, but I’m around if you want to talk.'],
-    ['Unknown number', 'You should stop asking about the lights in the park.'],
-    ['Fan account', 'Alfie stayed late to thank the whole crew after wrap. Hope he gets a day off soon.'],
-    ['Alistair · family chat', 'Liliana says the cat stole your chair. Anne-Marie denies all allegations.'],
-    ['Maya · co-star', 'They added a scene tomorrow. I sent you the revised pages—please tell me you saw the email.'],
-    ['Alfie · journal draft', 'Wrote half a song on the train. The other half is apparently just a list of things I need to buy.']
+    ['charlotte', 'alfie you left your water bottle in the rehearsal room again. it\'s by the stage door'],
+    ['maya', 'they moved the prop table btw. your script\'s fine'],
+    ['nate', 'does anyone have the revised pages or am i just cooked'],
+    ['jules_tech', 'reminder that the fog machine is NOT a toy. looking at the sophomores'],
+    ['alfie', 'who took the last donut from the green room. i\'m not mad i just want to talk'],
+    ['priya.sings', 'choir got moved to 3:30 tomorrow fyi'],
+    ['maya', 'alfie did you see the email, they added a scene'],
+    ['alfie', 'i did not see the email'],
+    ['nate', 'did anyone else see those lights by the river last night or am i losing it'],
+    ['charlotte', 'tell alfie to eat something that isn\'t sugar pls'],
+    ['jules_tech', 'lost and found has 3 hoodies and a single shoe. claim them'],
+    ['alfie', 'anne-marie sat on my laptop and sent half an essay to my teacher. great day']
   ];
   let beat = 0;
-  try { beat = Number(localStorage.getItem('alfie-story-beat-v3') || 0) % beats.length; } catch (_) {}
+  try { beat = Number(localStorage.getItem('alfie-story-beat-v4') || 0) % beats.length; } catch (_) {}
   setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
     const [speaker, text] = beats[beat]; beat = (beat + 1) % beats.length;
-    try { localStorage.setItem('alfie-story-beat-v3', beat); } catch (_) {}
-    const log = document.querySelector('#discord-chat');
-    if (log) { const p = document.createElement('p'); p.textContent = `${speaker}: ${text}`; log.appendChild(p); }
-    const toast = document.querySelector('#toast');
-    if (toast && document.visibilityState === 'visible') { toast.textContent = `New story update · ${speaker}`; toast.classList.add('visible'); setTimeout(() => toast.classList.remove('visible'), 2200); }
-  }, 300000);
+    try { localStorage.setItem('alfie-story-beat-v4', beat); } catch (_) {}
+    window.Alfie?.discordLine(speaker, text);
+  }, 180000);
 })();

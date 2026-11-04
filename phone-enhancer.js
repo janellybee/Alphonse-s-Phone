@@ -1,5 +1,6 @@
 /* Adds the Beacon, AU encyclopedia, and interactive magazine as phone apps. */
-document.addEventListener('DOMContentLoaded', () => {
+// This file is injected after DOMContentLoaded (see config.js), so run immediately if the DOM is ready.
+const initPhoneApps = () => {
   const screen = document.querySelector('.screen');
   const grid = document.querySelector('.app-grid') || document.querySelector('[data-app="messages"]')?.parentElement;
   if (!screen || !grid) return;
@@ -30,12 +31,16 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   function openView(id, label, title, mode) {
-    if (document.querySelector(`[data-app="${id}"]`)) return;
-    const icon = document.createElement('button');
-    icon.className = 'app-icon';
-    icon.dataset.app = id;
-    icon.innerHTML = `<span class="icon-tile" style="background:linear-gradient(145deg,#fff1ce,#c99b61)">${id === 'newspaper' ? '📰' : id === 'magazine' ? '📖' : 'W'}</span>${label}`;
-    grid.appendChild(icon);
+    if (document.querySelector(`#view-${id}`)) return;
+    // The home screen already has icons for these apps; only add one if it's missing.
+    let icon = document.querySelector(`#home [data-app="${id}"]`);
+    if (!icon) {
+      icon = document.createElement('button');
+      icon.className = 'app-icon';
+      icon.dataset.app = id;
+      icon.innerHTML = `<span class="icon-tile" style="background:linear-gradient(145deg,#fff1ce,#c99b61)">${id === 'newspaper' ? '📰' : id === 'magazine' ? '📖' : 'W'}</span>${label}`;
+      grid.appendChild(icon);
+    }
 
     const view = document.createElement('section');
     view.className = 'app-view';
@@ -79,11 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     screen.appendChild(view);
-    icon.addEventListener('click', () => {
-      document.querySelector('#home').style.display = 'none';
-      document.querySelectorAll('.app-view').forEach((app) => app.classList.remove('active'));
-      view.classList.add('active');
-    });
+    // Opening is handled by the delegated home-screen click handler in index.html.
     view.querySelector('.back-btn').addEventListener('click', () => {
       view.classList.remove('active');
       document.querySelector('#home').style.display = 'flex';
@@ -181,23 +182,26 @@ document.addEventListener('DOMContentLoaded', () => {
           article.querySelector('.comments').hidden = !article.querySelector('.comments').hidden;
         }
       });
-      root.addEventListener('submit', (event) => {
+      root.addEventListener('submit', async (event) => {
         if (!event.target.matches('form')) return;
         event.preventDefault();
         const input = event.target.querySelector('input');
         const text = input.value.trim();
         if (!text) return;
-        const comments = event.target.nextElementSibling;
-        const lines = [
-          `Reader: ${text}`,
-          /ring|light|park|alien/i.test(text) ? 'Alfie: I saw something too, but I’m still figuring out what it was. Did you see it yourself?' : /school|class|homework|rehears/i.test(text) ? 'Alfie: Yeah, the schedule gets intense. Trying to keep school from becoming the thing I only do between jobs.' : 'Alfie: I’m not sure I understood—which part caught your attention?'
-        ];
-        lines.forEach((line) => {
-          const p = document.createElement('p');
-          p.textContent = line;
-          comments.appendChild(p);
-        });
         input.value = '';
+        const comments = event.target.nextElementSibling;
+        const article = event.target.closest('article');
+        const mine = document.createElement('p');
+        mine.textContent = `You: ${text}`;
+        comments.appendChild(mine);
+        const his = document.createElement('p');
+        his.className = 'pending';
+        his.textContent = 'Alfie Summers ✓ is replying…';
+        comments.appendChild(his);
+        const context = `Article: "${article.querySelector('h3').textContent}" — ${article.querySelector('p').textContent}`;
+        const reply = window.Alfie ? await window.Alfie.ask('beacon_comment', text, { context }) : null;
+        his.classList.remove('pending');
+        his.textContent = `Alfie Summers ✓: ${reply || (/ring|light|park|alien/i.test(text) ? 'i saw something that night too. still not sure what it was tbh' : 'appreciate you reading this one')}`;
       });
     }
   }
@@ -205,4 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
   openView('newspaper', 'Beacon', 'The Borough Beacon', 'news');
   openView('wiki', 'Wikipedia', 'Alphonse Summers · AU Wiki', 'wiki');
   openView('magazine', 'Spotlight', 'Spotlight · Special Issue', 'magazine');
-});
+};
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initPhoneApps, { once: true });
+else initPhoneApps();
