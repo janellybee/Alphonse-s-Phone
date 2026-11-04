@@ -1,4 +1,4 @@
-// Load local features after the phone's inline UI is ready; no live AI endpoint is used.
+// Load the extra phone apps and offline dialogue after the inline UI is ready. Live replies come from /api/alfie (alfie-live.js).
 window.STORY_API_URL = '';
 window.STORY_MESSAGE_API_URL = '';
 document.addEventListener('DOMContentLoaded', () => {
