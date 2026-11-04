@@ -1,64 +1,76 @@
 /* Local story dialogue and periodic story beats. No network calls or live AI. */
 (() => {
   'use strict';
-  const historyKey = 'alfie-dialogue-history-v2';
-  const beatKey = 'alfie-story-beat-v2';
-  const responses = {
+
+  const historyKey = 'alfie-dialogue-history-v3';
+  const beatKey = 'alfie-story-beat-v3';
+  const replies = {
     charlotte: [
       "Charlotte catches me doing the 'I'm fine' thing every time. Annoying. Helpful, but annoying.",
       "She's easy to be around. I don't have to turn every conversation into an interview, which is nice.",
-      "I was going to ask her to get food after rehearsal and somehow made that complicated in my head. It was not complicated."
+      "I was going to ask her to get food after rehearsal and somehow made that complicated in my head. It was not complicated.",
+      "She remembered my call time better than I did. I'm choosing to call that teamwork, not evidence that I need a better calendar."
     ],
     family: [
       "There are six of us kids, so the family chat is mostly scheduling and food photos. I miss the noise when I'm away.",
       "Mom's Joanne, Dad's Dakota. Tobias, Alistair, Valerie, the twins Keira and Elias, and Liliana. Family dinner gets loud fast.",
-      "I love them. I also mute the group chat when I have homework. Both things can be true."
+      "I love them. I also mute the group chat when I have homework. Both things can be true.",
+      "My siblings have a running argument about who gets the window seat on calls. It has been going on for years. Nobody is backing down."
     ],
     ring: [
       "I found it after the wrap party and thought wardrobe had dropped a prop. Then it lit up and those things showed up. So, yeah, still working on a normal explanation.",
       "The archivist knows more than I do, which is not hard. I'm trying to ask questions before I touch anything else.",
-      "I don't know what Stellaris wants from me yet. 'Don't test mysterious powers in public' seems like a decent first rule."
+      "I don't know what Stellaris wants from me yet. 'Don't test mysterious powers in public' seems like a decent first rule.",
+      "It went silver when I was outside and indigo in my room. I wrote it down in case it means something. Or in case I'm losing it. Either way, notes."
     ],
     school: [
       "Starlight's good. The teachers are understanding about work, but they still expect me to turn things in. Which is fair.",
       "Rehearsal was fine. I only left my script in the black box once. That's progress.",
-      "My calendar and I are not getting along this week. School, set, homework. Repeat."
+      "My calendar and I are not getting along this week. School, set, homework. Repeat.",
+      "I like that at Starlight people care about the work, not just who got recognized in the hallway. Makes it easier to relax."
     ],
     work: [
       "The crew do a lot that never makes it on screen. I try to learn names and say thanks, even if I'm bad at the first part.",
       "My co-stars make long days easier. Mostly we trade snacks and complain about call times.",
-      "The costume team are brilliant. I owe them an apology for assuming that ring was one of their props."
+      "The costume team are brilliant. I owe them an apology for assuming that ring was one of their props.",
+      "The director gave me a note I didn't get until the next take. I wrote it down so I can pretend that was the plan."
     ],
     fans: [
       "I'm grateful people care about the work. I get awkward when someone recognizes me, but I never want them to think I'm annoyed.",
       "I can't answer every message, but I do read a lot of them when I get a quiet minute. Some have made a rough day better.",
-      "It's strange being recognized in public. I appreciate the support. I'm also still trying to remember my locker combination."
+      "It's strange being recognized in public. I appreciate the support. I'm also still trying to remember my locker combination.",
+      "A kid at the last event told me they started music lessons because of the show. I didn't know what to say, so I thanked them. I meant it."
     ],
     antagonist: [
       "I don't want to hurt anyone. If somebody's putting people in danger, I'll try to stop them without making it worse.",
       "Being angry doesn't mean I get to stop thinking. Especially with the ring involved.",
-      "I'd rather get people out safely and ask questions after. Threatening someone isn't going to help."
+      "I'd rather get people out safely and ask questions after. Threatening someone isn't going to help.",
+      "I don't know who sent that message. I'm showing it to the archivist before I do anything. Solo heroics are probably a bad idea."
     ],
     anxiety: [
       "Yeah, I get that. I try to make the next minute smaller instead of thinking about the whole week at once.",
       "You don't have to pretend you're fine with me. If you're in danger or might hurt yourself, please reach out to someone you trust nearby or local emergency support.",
-      "I find somewhere quiet, put both feet on the floor, and breathe out slowly. It doesn't fix everything, but it gives me a second."
+      "I find somewhere quiet, put both feet on the floor, and breathe out slowly. It doesn't fix everything, but it gives me a second.",
+      "I usually tell Charlotte when I'm spiralling instead of trying to act normal until I crash. Still learning that one."
     ],
     pets: [
       "Anne-Marie is a Persian cat and thinks she owns the place. Dex is the chihuahua, Joyce is the teacup Pom, and Mayfield is my horse. I miss them when I'm working.",
-      "Anne-Marie sits on my scripts. Dex barks at the delivery person. Joyce is tiny and somehow louder than both of us. Mayfield's the calm one."
+      "Anne-Marie sits on my scripts. Dex barks at the delivery person. Joyce is tiny and somehow louder than both of us. Mayfield's the calm one.",
+      "Mayfield is the only one who doesn't care about a premiere. He just wants his usual routine. Honestly, relatable."
     ],
     food: [
       "Donuts are a good post-rehearsal plan. Poutine too. I'm not claiming either is a balanced dinner.",
       "Fruit mochi, apple pie, soufflé pancakes. I'm easy to bribe. Not with seafood, though—I'm allergic, so I check ingredients.",
-      "I like spicy food, then immediately regret being so confident about the spice level. Every time."
+      "I like spicy food, then immediately regret being so confident about the spice level. Every time.",
+      "There is a tiny café near school with good hot chocolate. I am not telling you which one because then it won't be tiny anymore."
     ],
     music: [
       "Guitar helps me get out of my head after work. Sometimes I write a song; sometimes I play the same four chords until I'm less tense.",
       "I keep half-finished lyrics in my journal. A surprising number are about missing home and wanting a snack.",
-      "Piano's good when I need to slow down. Guitar's good when I need to make noise. Depends on the day."
+      "Piano's good when I need to slow down. Guitar's good when I need to make noise. Depends on the day.",
+      "I have a voice memo that's just me humming a melody and then asking myself to buy more donuts. Very professional songwriting process."
     ],
-    hello: [
+    greeting: [
       "Hey. What's up? I'm between homework and trying not to stare at a very suspicious ring.",
       "Hi. I'm Alfie. Alphonse if this is a school email. What did you want to ask?",
       "Hey, thanks for messaging. I may be a little slow if I'm at rehearsal, but I'm here now."
@@ -69,34 +81,49 @@
       "I might be missing some context. What happened right before that?"
     ]
   };
-  const tests = [
+
+  // More specific intents go first so a message about being scared of the ring
+  // gets a relevant answer instead of whichever keyword happened to match first.
+  const intents = [
+    ['allergy', /seafood|allerg(y|ic|ies)/],
     ['anxiety', /anxious|anxiety|panic|nervous|scared|afraid|overwhelmed|unsafe|hurt myself/],
     ['charlotte', /charlotte|girlfriend|crush|date|relationship|love/],
     ['family', /joanne|dakota|tobias|alistair|valerie|keira|elias|liliana|family|siblings?|brothers?|sisters?|mom|mum|dad|parents?/],
-    ['ring', /stellaris|ring|space|alien|jellyfish|archivist|cosmic|glow|powers?/],
     ['pets', /anne.?marie|dex|joyce|mayfield|cat|horse|dogs?|pets?/],
-    ['food', /food|eat|donut|doughnut|poutine|mochi|pancake|apple pie|spicy|seafood|allerg/],
-    ['music', /song|music|guitar|piano|sing|script|write/],
-    ['work', /co.?stars?|cast|crew|staff|costume|director|producer|fans?|audience|hollywood|acting|audition|set|film|show/],
+    ['food', /food|eat|donut|doughnut|poutine|mochi|pancake|apple pie|spicy/],
+    ['ring', /stellaris|ring|space|alien|jellyfish|archivist|cosmic|glow|powers?/],
+    ['antagonist', /threat|enemy|antagonist|villain|attack|danger|stalker/],
+    ['fans', /fan|fans|supporter|audience|recognize me|meet you/],
+    ['work', /co.?stars?|cast|crew|staff|costume|director|producer|hollywood|acting|audition|set|film|show/],
     ['school', /school|starlight|homework|class|teacher|rehearsal|theatre|theater|grade|sophomore/],
-    ['hello', /^(hi|hello|hey|good morning|good evening)\b/]
+    ['music', /song|music|guitar|piano|sing|script|write/],
+    ['greeting', /^(hi|hello|hey|good morning|good evening)\b/]
   ];
+
   function classify(text) {
-    const value = String(text || '').toLowerCase();
-    return tests.find(([, pattern]) => pattern.test(value))?.[0] || 'clarify';
+    const value = String(text || '').toLowerCase().trim();
+    if (/\bwhy\b/.test(value) && /\b(ring|glow|power|alien)\b/.test(value)) return 'ring';
+    return intents.find(([, pattern]) => pattern.test(value))?.[0] || 'clarify';
   }
-  function choose(topic, speaker) {
-    const lines = responses[topic] || responses.clarify;
-    let used = [];
-    try { used = JSON.parse(localStorage.getItem(historyKey) || '[]'); } catch (_) {}
-    const available = lines.filter((line) => !used.includes(`${speaker}:${line}`));
-    const line = (available.length ? available : lines)[Math.floor(Math.random() * (available.length || lines.length))];
-    used.push(`${speaker}:${line}`);
-    localStorage.setItem(historyKey, JSON.stringify(used.slice(-30)));
-    return line;
+
+  function choose(topic, speaker = 'Alfie') {
+    const options = topic === 'allergy'
+      ? ["Seafood allergy, so I check ingredients even when it feels awkward. Better awkward than a bad reaction. Please take allergies seriously, okay?"]
+      : (replies[topic] || replies.clarify);
+    let history = [];
+    try { history = JSON.parse(localStorage.getItem(historyKey) || '[]'); } catch (_) {}
+    const key = `${speaker}:${topic}:`;
+    const recent = history.filter((entry) => entry.startsWith(key)).slice(-2);
+    let available = options.filter((line) => !recent.includes(key + line));
+    if (!available.length) available = options;
+    const answer = available[Math.floor(Math.random() * available.length)];
+    history.push(key + answer);
+    try { localStorage.setItem(historyKey, JSON.stringify(history.slice(-100))); } catch (_) {}
+    return answer;
   }
-  // The existing page calls localReply for message, blog, and forum responses.
-  window.localReply = (text) => choose(classify(text), 'Alfie');
+
+  // The existing UI uses localReply for direct messages, blog comments and forum replies.
+  window.localReply = (text) => choose(classify(text));
 
   const beats = [
     ['Charlotte', 'You left your water bottle in the rehearsal room. I put it by the stage door. Again.'],
@@ -108,43 +135,63 @@
     ['Charlotte', 'You went quiet after rehearsal. No pressure to explain over text, but I’m around if you want to talk.'],
     ['Unknown number', 'You should stop asking about the lights in the park.'],
     ['Fan account', 'Alfie stayed late to thank the whole crew after wrap. Hope he gets a day off soon.'],
-    ['Alistair · family chat', 'Liliana says the cat stole your chair. Anne-Marie denies all allegations.']
+    ['Alistair · family chat', 'Liliana says the cat stole your chair. Anne-Marie denies all allegations.'],
+    ['Maya · co-star', 'They added a scene tomorrow. I sent you the revised pages—please tell me you saw the email.'],
+    ['Alfie · journal draft', 'Wrote half a song on the train. The other half is apparently just a list of things I need to buy.'],
+    ['Dakota · Dad', 'Premiere photos came out. Your mother says the blue jacket was her idea. She is correct.'],
+    ['Charlotte', 'I saved you a seat at lunch. Don’t make it weird by thanking me like I rescued you from a burning building.'],
+    ['Unknown account', 'You have no idea what that ring is capable of.'],
+    ['Joanne · Mom', 'Liliana wants to know if the white streaks in your hair are permanent. I told her to ask you, not me.'],
+    ['Fan comment', 'The scene with the piano made me call my grandmother. Thank you for that.'],
+    ['Riley · manager', 'The charity visit went well. The organizers asked me to tell you the kids loved the sketchbook idea.'],
+    ['Alfie', 'I think I figured out how to make the ring stop glowing. I am not sure if that is good news yet.'],
+    ['Maya · co-star', 'You left your lunch in the makeup trailer. Again. I put it in the fridge before it became a science project.']
   ];
-  let index = 0;
-  try { index = Number(localStorage.getItem(beatKey) || 0) % beats.length; } catch (_) {}
-  function addBeat() {
-    const [speaker, text] = beats[index];
-    index = (index + 1) % beats.length;
-    try { localStorage.setItem(beatKey, String(index)); } catch (_) {}
+
+  let beatIndex = 0;
+  try { beatIndex = Number(localStorage.getItem(beatKey) || 0) % beats.length; } catch (_) {}
+
+  function appendBeatToDiscord(speaker, text) {
     const log = document.querySelector('#discord-chat');
-    if (log) {
-      const p = document.createElement('p');
-      const name = document.createElement('strong');
-      name.textContent = speaker;
-      p.append(name, document.createElement('br'), document.createTextNode(text));
-      log.appendChild(p);
-      log.scrollTop = log.scrollHeight;
-    }
-    if (index % 3 === 0) {
-      const posts = document.querySelector('#school-posts');
-      if (posts) {
-        const article = document.createElement('article');
-        article.className = 'post';
-        const label = document.createElement('span'); label.className = 'tag'; label.textContent = 'NEW · STORY UPDATE';
-        const title = document.createElement('h3'); title.textContent = `A quick update from ${speaker}`;
-        const body = document.createElement('p'); body.textContent = text;
-        article.append(label, title, body);
-        posts.prepend(article);
+    if (!log) return;
+    const p = document.createElement('p');
+    const name = document.createElement('strong');
+    name.textContent = speaker;
+    p.append(name, document.createElement('br'), document.createTextNode(text));
+    log.appendChild(p);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function appendBeatToBlog(speaker, text) {
+    const posts = document.querySelector('#school-posts');
+    if (!posts) return;
+    const article = document.createElement('article');
+    article.className = 'post';
+    const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = 'NEW · STORY UPDATE';
+    const title = document.createElement('h3'); title.textContent = `From ${speaker}`;
+    const body = document.createElement('p'); body.textContent = text;
+    article.append(tag, title, body);
+    posts.prepend(article);
+  }
+
+  function addBeat() {
+    const [speaker, text] = beats[beatIndex];
+    beatIndex = (beatIndex + 1) % beats.length;
+    try { localStorage.setItem(beatKey, String(beatIndex)); } catch (_) {}
+    appendBeatToDiscord(speaker, text);
+    // Every third beat also adds a school update; user posts and conversations remain untouched.
+    if (beatIndex % 3 === 0) appendBeatToBlog(speaker, text);
+    if (document.visibilityState === 'visible') {
+      const toast = document.querySelector('#toast');
+      if (toast) {
+        toast.textContent = `New story update · ${speaker}`;
+        toast.classList.add('visible');
+        clearTimeout(window.alfieStoryToast);
+        window.alfieStoryToast = setTimeout(() => toast.classList.remove('visible'), 2200);
       }
     }
-    const toast = document.querySelector('#toast');
-    if (toast && document.visibilityState === 'visible') {
-      toast.textContent = `New story update · ${speaker}`;
-      toast.classList.add('visible');
-      clearTimeout(window.alfieStoryToast);
-      window.alfieStoryToast = setTimeout(() => toast.classList.remove('visible'), 2200);
-    }
   }
-  // New beats are appended; they never overwrite or reset reader conversations.
+
+  // Rotate through varied authored events every five minutes without replacing reader input.
   window.setInterval(addBeat, 5 * 60 * 1000);
 })();
