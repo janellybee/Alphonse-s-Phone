@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ['campus','STUDENT LIFE','Lost script found under snack box','A backstage search ended when a co-star found the missing pages beneath a box of crackers. The student involved declined to comment, then admitted the snack box was his.'],
     ['odd','UNEXPLAINED · DEVELOPING','Park lights leave witnesses with questions','Walkers reported a flash near the riverside path. One Starlight student called it “like a film effect, except nobody was filming.”']
   ];
+
   const magazinePages = [
     { label:'The cover', html:`<p class="eyebrow">THE SPECIAL ISSUE · A LONG-FORM CONVERSATION</p><h1>ALPHONSE<br>SUMMERS</h1><p class="cover-deck">A life between the wings, the set, the studio and home</p><div class="cover-art">✦　A performer, a student, a son, a friend—and still figuring it out.</div><p class="smallprint">A fictional AU magazine issue. Interviews and career details are in-universe storytelling, not real-world reporting.</p>` },
     { label:'Editor’s note & contents', html:`<h2>More than a call sheet</h2><p>This special issue follows Alfie from baby-commercial days to stage doors, screen roles, voice booths, music experiments and the busy sophomore life he is living now. It is an imaginative, fictional interview based on the AU details shared by the reader.</p><p><b>Reader note:</b> Specific project titles, dates, named award ceremonies and unrevealed future credits were not supplied, so this issue does not invent them. Where a detail is still open, it says so.</p><h3>Inside this issue</h3><ol class="contents"><li>First frame: commercials and family influence</li><li>Learning to take the room: stage, screen and auditions</li><li>Awards, grief and being seen</li><li>Many roles, one person</li><li>Family, Charlotte and the people behind the work</li><li>Anxiety, phobias and airports</li><li>Momosu Island: five months away</li><li>Favorites, future plans and advice</li><li>Filmography, music, honors, quiz and thank-you</li></ol>` },
@@ -30,39 +31,177 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openView(id, label, title, mode) {
     if (document.querySelector(`[data-app="${id}"]`)) return;
-    const icon = document.createElement('button'); icon.className = 'app-icon'; icon.dataset.app = id;
+    const icon = document.createElement('button');
+    icon.className = 'app-icon';
+    icon.dataset.app = id;
     icon.innerHTML = `<span class="icon-tile" style="background:linear-gradient(145deg,#fff1ce,#c99b61)">${id === 'newspaper' ? '📰' : id === 'magazine' ? '📖' : 'W'}</span>${label}`;
     grid.appendChild(icon);
-    const view = document.createElement('section'); view.className = 'app-view'; view.id = `view-${id}`;
+
+    const view = document.createElement('section');
+    view.className = 'app-view';
+    view.id = `view-${id}`;
     const header = `<header class="app-header"><button class="back-btn">‹ Home</button><h2>${title}</h2><span></span></header>`;
+
     if (mode === 'magazine') {
-      view.innerHTML = `${header}<style>.flipbook{--ink:#28231f;flex:1;min-height:0;display:flex;flex-direction:column;background:#20212a;color:var(--ink);padding:10px;overflow:hidden;font-family:Georgia,serif}.mag-paper{position:relative;flex:1;overflow:auto;max-width:680px;width:100%;margin:auto;background:#fffaf0;padding:clamp(18px,5vw,36px);box-shadow:0 10px 35px #0008;line-height:1.55}.mag-paper h1{font-size:clamp(34px,9vw,66px);line-height:.95;color:#6b2836;margin:10px 0}.mag-paper h2{font-size:clamp(25px,6vw,36px);line-height:1.08;color:#6b2836;border-bottom:1px solid #c9b9a1;padding-bottom:8px}.mag-paper h3{margin:18px 0 5px;color:#6b2836}.mag-paper p{margin:10px 0}.mag-paper .eyebrow,.mag-paper .smallprint{font:10px Arial,sans-serif;letter-spacing:.12em;color:#766a5d;text-transform:uppercase}.mag-paper .smallprint{letter-spacing:0;text-transform:none}.mag-paper .cover-deck{font-size:19px}.mag-paper .cover-art{margin:28px 0;padding:28px 12px;border-block:1px solid #c9b9a1;text-align:center;font-size:19px}.mag-paper .pullquote{font-size:21px;font-style:italic;color:#6b2836;border-left:3px solid #b98a57;padding-left:14px}.mag-paper .contents{padding-left:22px}.mag-paper dt{font-weight:bold;margin-top:12px}.mag-paper dd{margin-left:0}.mag-controls{display:flex;justify-content:center;align-items:center;gap:12px;padding:10px;color:#fff;font:12px Arial,sans-serif}.mag-controls button,.mag-toc{border:1px solid #aaa;border-radius:20px;padding:8px 12px;background:#fff;color:#222;cursor:pointer}.mag-toc{display:block;margin:10px auto 0}.mag-page-no{color:#fff;font:12px Arial,sans-serif}.quiz button{margin:4px;padding:8px 12px;border:1px solid #927568;border-radius:16px;background:#fff;cursor:pointer}</style><main class="flipbook"><article class="mag-paper" aria-live="polite"></article><button class="mag-toc" type="button">Issue contents</button><nav class="mag-controls" aria-label="Magazine pages"><button data-prev>‹ Previous</button><span class="mag-page-no"></span><button data-next>Next ›</button></nav></main>`;
+      view.innerHTML = `${header}<style>
+        .flipbook{flex:1;display:flex;flex-direction:column;min-height:0;background:linear-gradient(180deg,#171a22,#10131b);padding:10px;overflow:hidden;}
+        .mag-paper-wrap{position:relative;flex:1;display:grid;place-items:center;overflow:hidden;padding:6px 0;}
+        .mag-paper{position:relative;width:min(100%, 690px);height:100%;max-height:100%;overflow:auto;background:#fffaf0;color:#2f2a27;box-shadow:0 20px 35px rgba(0,0,0,.35);padding:clamp(18px,4vw,38px);line-height:1.55;border:1px solid rgba(0,0,0,.08);transform-origin:center center;transition:transform .55s cubic-bezier(.24,.75,.2,1), box-shadow .55s ease, filter .55s ease;}
+        .mag-paper::before{content:"";position:absolute;inset:0 0 0 auto;width:10px;background:linear-gradient(90deg,rgba(45,35,20,.08),rgba(45,35,20,.02),transparent);pointer-events:none;}
+        .mag-paper.turn-left{transform:perspective(1200px) rotateY(-12deg) translateX(-12px);filter:saturate(.9);box-shadow:0 12px 26px rgba(0,0,0,.28);}
+        .mag-paper.turn-right{transform:perspective(1200px) rotateY(12deg) translateX(12px);filter:saturate(.9);box-shadow:0 12px 26px rgba(0,0,0,.28);}
+        .mag-paper h1{font-size:clamp(30px,8vw,62px);line-height:.94;margin:6px 0 14px;color:#642d3b;letter-spacing:-.04em;font-family:Georgia,serif;}
+        .mag-paper h2{font-size:clamp(24px,6vw,34px);line-height:1.08;margin:18px 0 12px;color:#642d3b;font-family:Georgia,serif;border-bottom:1px solid #d5b89a;padding-bottom:8px;}
+        .mag-paper h3{font-size:21px;margin:18px 0 8px;color:#642d3b;font-family:Georgia,serif;}
+        .mag-paper p{margin:10px 0;}
+        .mag-paper .eyebrow,.mag-paper .smallprint{font:10px Arial,sans-serif;letter-spacing:.12em;color:#77675d;text-transform:uppercase;}
+        .mag-paper .smallprint{letter-spacing:0;text-transform:none;}
+        .mag-paper .cover-deck{font-size:19px;font-style:italic;color:#473c34;}
+        .mag-paper .cover-art{margin:24px 0;padding:28px 12px;border-top:1px solid #d7c1a1;border-bottom:1px solid #d7c1a1;text-align:center;font-size:19px;color:#3d302c;background:linear-gradient(180deg,#f8f1ea,#f5ebdf);}
+        .mag-paper .pullquote{margin:18px 0;padding-left:14px;border-left:3px solid #b08154;font-size:22px;font-style:italic;color:#642d3b;line-height:1.3;}
+        .mag-paper .contents{padding-left:24px;line-height:1.8;}
+        .mag-paper dl{margin-top:12px;}
+        .mag-paper dt{font-weight:700;color:#2d291f;margin-top:12px;}
+        .mag-paper dd{margin:6px 0 0 0;}
+        .mag-paper .quiz{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+        .mag-paper .quiz button{background:#fff;border:1px solid #bea98f;border-radius:18px;padding:8px 12px;cursor:pointer;font:12px Arial,sans-serif;}
+        .mag-paper .quiz p[aria-live]{margin-top:10px;padding-top:10px;border-top:1px solid #d5cab6;}
+        .mag-controls{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 8px 6px;color:#fff;font:12px Arial,sans-serif;}
+        .mag-controls button,.mag-toc{background:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:8px 12px;color:#1b1d22;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.15);}
+        .mag-controls button:disabled{opacity:.55;cursor:not-allowed;}
+        .mag-toc{display:block;margin:0 auto 4px;background:#f7f1eb;color:#222;}
+        .mag-page-no{min-width:140px;text-align:center;white-space:nowrap;}
+      </style><div class="flipbook"><div class="mag-paper-wrap"><article class="mag-paper" aria-live="polite"></article></div><button class="mag-toc" type="button">Issue contents</button><nav class="mag-controls" aria-label="Magazine pages"><button data-prev type="button">‹ Previous</button><span class="mag-page-no"></span><button data-next type="button">Next ›</button></nav></div>`;
     } else if (mode === 'news') {
       view.innerHTML = `${header}<style>.beacon{flex:1;overflow:auto;background:#f4f0e7;color:#20232b;padding:12px;font:14px Georgia,serif}.beacon h1{text-align:center;font-size:30px;margin:6px}.beacon .dek{text-align:center;color:#555}.beacon nav{display:flex;gap:5px;overflow:auto;padding:8px 0}.beacon button{border:1px solid #999;background:#fff;padding:7px;border-radius:16px;white-space:nowrap}.beacon .selected{background:#17233d;color:#fff}.beacon input{width:100%;padding:9px;margin:7px 0}.beacon article{border-bottom:1px solid #aaa;padding:12px 0}.beacon h3{font-size:21px;margin:5px 0}.beacon p{line-height:1.45}.beacon small{color:#765044}.beacon .comments{font:12px Arial,sans-serif}.beacon .comments p{border-top:1px solid #ccc;padding-top:5px}.beacon form{display:flex;gap:5px}.beacon form input{flex:1;min-width:0}.beacon .story-actions{display:flex;gap:6px}.beacon .hide{display:none!important}</style><div class="beacon"><p class="dek">NEW YORK · CAMPUS · CULTURE · CITY</p><h1>The Borough Beacon</h1><p class="dek">A fictional newspaper from Alfie's AU</p><nav>${[['all','Top Stories'],['campus','Campus'],['arts','Arts'],['city','City'],['odd','Unexplained']].map(([key,name])=>`<button data-filter="${key}" class="${key==='all'?'selected':''}">${name}</button>`).join('')}</nav><input type="search" placeholder="Search this edition" aria-label="Search articles"><div class="beacon-stories"></div><p class="dek">Fictional AU news · Comments stay on this device.</p></div>`;
     } else {
       view.innerHTML = `${header}<iframe title="${title}" src="./wiki.html" style="border:0;width:100%;height:100%;flex:1;background:#f4f0e7"></iframe>`;
     }
+
     screen.appendChild(view);
-    icon.addEventListener('click', () => { document.querySelector('#home').style.display = 'none'; document.querySelectorAll('.app-view').forEach((app) => app.classList.remove('active')); view.classList.add('active'); });
-    view.querySelector('.back-btn').addEventListener('click', () => { view.classList.remove('active'); document.querySelector('#home').style.display = 'flex'; });
+    icon.addEventListener('click', () => {
+      document.querySelector('#home').style.display = 'none';
+      document.querySelectorAll('.app-view').forEach((app) => app.classList.remove('active'));
+      view.classList.add('active');
+    });
+    view.querySelector('.back-btn').addEventListener('click', () => {
+      view.classList.remove('active');
+      document.querySelector('#home').style.display = 'flex';
+    });
+
     if (mode === 'magazine') {
-      let page = 0; const paper = view.querySelector('.mag-paper'), number = view.querySelector('.mag-page-no');
-      const render = () => { paper.innerHTML = magazinePages[page].html; number.textContent = `${page + 1} / ${magazinePages.length} · ${magazinePages[page].label}`; view.querySelector('[data-prev]').disabled = page === 0; view.querySelector('[data-next]').disabled = page === magazinePages.length - 1; };
-      view.querySelector('[data-prev]').onclick = () => { if (page) { page--; render(); } };
-      view.querySelector('[data-next]').onclick = () => { if (page < magazinePages.length - 1) { page++; render(); } };
-      view.querySelector('.mag-toc').onclick = () => { const choice = prompt(`Go to a page (1-${magazinePages.length}):\n${magazinePages.map((p,i)=>`${i+1}. ${p.label}`).join('\n')}`); const target = Number(choice) - 1; if (Number.isInteger(target) && target >= 0 && target < magazinePages.length) { page = target; render(); } };
-      paper.addEventListener('click', (event) => { if (!event.target.matches('[data-answer]')) return; const result = paper.querySelector('.quiz [aria-live]'); result.textContent = event.target.dataset.answer === 'yes' ? 'Correct—Tobias encouraged Alfie to explore music and hosting.' : 'Not quite. Try another answer.'; });
+      let page = 0;
+      const paper = view.querySelector('.mag-paper');
+      const pageNo = view.querySelector('.mag-page-no');
+      const prev = view.querySelector('[data-prev]');
+      const next = view.querySelector('[data-next]');
+
+      const render = () => {
+        const current = magazinePages[page];
+        paper.classList.remove('turn-left', 'turn-right');
+        paper.innerHTML = current.html;
+        pageNo.textContent = `${page + 1} / ${magazinePages.length} · ${current.label}`;
+        prev.disabled = page === 0;
+        next.disabled = page === magazinePages.length - 1;
+      };
+
+      const turn = (direction) => {
+        if (direction === 'next' && page >= magazinePages.length - 1) return;
+        if (direction === 'prev' && page <= 0) return;
+        paper.classList.remove('turn-left', 'turn-right');
+        void paper.offsetWidth;
+        paper.classList.add(direction === 'next' ? 'turn-left' : 'turn-right');
+        setTimeout(() => {
+          page = direction === 'next' ? page + 1 : page - 1;
+          render();
+        }, 260);
+      };
+
+      prev.onclick = () => turn('prev');
+      next.onclick = () => turn('next');
+      view.querySelector('.mag-toc').onclick = () => {
+        const list = magazinePages.map((item, index) => `${index + 1}. ${item.label}`).join('\n');
+        const choice = prompt(`Go to a page:\n${list}`);
+        const target = Number(choice) - 1;
+        if (Number.isInteger(target) && target >= 0 && target < magazinePages.length) {
+          page = target;
+          render();
+        }
+      };
+
+      paper.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-answer]');
+        if (!button) return;
+        const result = paper.querySelector('.quiz [aria-live]');
+        result.textContent = button.dataset.answer === 'yes'
+          ? 'Correct—Tobias encouraged Alfie to explore music and hosting.'
+          : 'Not quite. Try another answer.';
+      });
+
       render();
     }
-    if (mode !== 'news') return;
-    const root = view.querySelector('.beacon-stories');
-    stories.forEach(([category, tag, title, body]) => { const article = document.createElement('article'); article.dataset.category = category; article.innerHTML = `<small>${tag}</small><h3></h3><p></p><div class="story-actions"><button class="like">♡ <span>0</span></button><button class="comment-toggle">Comment</button></div><div class="comments" hidden><form><input placeholder="Add a thought" aria-label="Comment"><button>Send</button></form><div></div></div>`; article.querySelector('h3').textContent = title; article.querySelector('p').textContent = body; root.appendChild(article); });
-    const filter = (category, query = '') => root.querySelectorAll('article').forEach((article) => article.classList.toggle('hide', (!(category === 'all' || article.dataset.category === category) || !article.textContent.toLowerCase().includes(query))));
-    view.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => { view.querySelector('.selected')?.classList.remove('selected'); button.classList.add('selected'); filter(button.dataset.filter, view.querySelector('input[type=search]').value.toLowerCase()); }));
-    view.querySelector('input[type=search]').addEventListener('input', (event) => filter(view.querySelector('.selected').dataset.filter, event.target.value.toLowerCase()));
-    root.addEventListener('click', (event) => { const article = event.target.closest('article'); if (!article) return; if (event.target.closest('.like')) { const button = event.target.closest('.like'), count = button.querySelector('span'), liked = button.dataset.liked === '1'; button.dataset.liked = liked ? '0' : '1'; count.textContent = String(Number(count.textContent) + (liked ? -1 : 1)); button.firstChild.textContent = liked ? '♡ ' : '♥ '; } if (event.target.closest('.comment-toggle')) article.querySelector('.comments').hidden = !article.querySelector('.comments').hidden; });
-    root.addEventListener('submit', (event) => { if (!event.target.matches('form')) return; event.preventDefault(); const input = event.target.querySelector('input'), text = input.value.trim(); if (!text) return; const comments = event.target.nextElementSibling; for (const line of [`Reader: ${text}`, /ring|light|park|alien/i.test(text) ? 'Alfie: I saw something too, but I’m still figuring out what it was. Did you see it yourself?' : /school|class|homework|rehears/i.test(text) ? 'Alfie: Yeah, the schedule gets intense. Trying to keep school from becoming the thing I only do between jobs.' : 'Alfie: I’m not sure I understood—which part caught your attention?']) { const p = document.createElement('p'); p.textContent = line; comments.appendChild(p); } input.value = ''; });
+
+    if (mode === 'news') {
+      const root = view.querySelector('.beacon-stories');
+      stories.forEach(([category, tag, title, body]) => {
+        const article = document.createElement('article');
+        article.dataset.category = category;
+        article.innerHTML = `<small>${tag}</small><h3></h3><p></p><div class="story-actions"><button class="like">♡ <span>0</span></button><button class="comment-toggle">Comment</button></div><div class="comments" hidden><form><input placeholder="Add a thought" aria-label="Comment"><button>Send</button></form><div></div></div>`;
+        article.querySelector('h3').textContent = title;
+        article.querySelector('p').textContent = body;
+        root.appendChild(article);
+      });
+      const filter = (category, query = '') => {
+        root.querySelectorAll('article').forEach((article) => {
+          article.classList.toggle('hide', !(category === 'all' || article.dataset.category === category) || !article.textContent.toLowerCase().includes(query));
+        });
+      };
+      view.querySelectorAll('[data-filter]').forEach((button) => {
+        button.addEventListener('click', () => {
+          view.querySelector('.selected')?.classList.remove('selected');
+          button.classList.add('selected');
+          filter(button.dataset.filter, view.querySelector('input[type=search]').value.toLowerCase());
+        });
+      });
+      view.querySelector('input[type=search]').addEventListener('input', (event) => {
+        filter(view.querySelector('.selected').dataset.filter, event.target.value.toLowerCase());
+      });
+      root.addEventListener('click', (event) => {
+        const article = event.target.closest('article');
+        if (!article) return;
+        if (event.target.closest('.like')) {
+          const button = event.target.closest('.like');
+          const count = button.querySelector('span');
+          const liked = button.dataset.liked === '1';
+          button.dataset.liked = liked ? '0' : '1';
+          count.textContent = String(Number(count.textContent) + (liked ? -1 : 1));
+          button.firstChild.textContent = liked ? '♡ ' : '♥ ';
+        }
+        if (event.target.closest('.comment-toggle')) {
+          article.querySelector('.comments').hidden = !article.querySelector('.comments').hidden;
+        }
+      });
+      root.addEventListener('submit', (event) => {
+        if (!event.target.matches('form')) return;
+        event.preventDefault();
+        const input = event.target.querySelector('input');
+        const text = input.value.trim();
+        if (!text) return;
+        const comments = event.target.nextElementSibling;
+        const lines = [
+          `Reader: ${text}`,
+          /ring|light|park|alien/i.test(text) ? 'Alfie: I saw something too, but I’m still figuring out what it was. Did you see it yourself?' : /school|class|homework|rehears/i.test(text) ? 'Alfie: Yeah, the schedule gets intense. Trying to keep school from becoming the thing I only do between jobs.' : 'Alfie: I’m not sure I understood—which part caught your attention?'
+        ];
+        lines.forEach((line) => {
+          const p = document.createElement('p');
+          p.textContent = line;
+          comments.appendChild(p);
+        });
+        input.value = '';
+      });
+    }
   }
+
   openView('newspaper', 'Beacon', 'The Borough Beacon', 'news');
   openView('wiki', 'Wikipedia', 'Alphonse Summers · AU Wiki', 'wiki');
   openView('magazine', 'Spotlight', 'Spotlight · Special Issue', 'magazine');
