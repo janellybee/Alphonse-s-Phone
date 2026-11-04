@@ -94,27 +94,5 @@
 
   // Form handling lives in alfie-live.js; this file only provides offline fallback lines.
 
-  // Occasional background chatter in the Discord server so it feels lived-in.
-  const beats = [
-    ['charlotte', 'alfie you left your water bottle in the rehearsal room again. it\'s by the stage door'],
-    ['maya', 'they moved the prop table btw. your script\'s fine'],
-    ['nate', 'does anyone have the revised pages or am i just cooked'],
-    ['jules_tech', 'reminder that the fog machine is NOT a toy. looking at the sophomores'],
-    ['alfie', 'who took the last donut from the green room. i\'m not mad i just want to talk'],
-    ['priya.sings', 'choir got moved to 3:30 tomorrow fyi'],
-    ['maya', 'alfie did you see the email, they added a scene'],
-    ['alfie', 'i did not see the email'],
-    ['nate', 'did anyone else see those lights by the river last night or am i losing it'],
-    ['charlotte', 'tell alfie to eat something that isn\'t sugar pls'],
-    ['jules_tech', 'lost and found has 3 hoodies and a single shoe. claim them'],
-    ['alfie', 'anne-marie sat on my laptop and sent half an essay to my teacher. great day']
-  ];
-  let beat = 0;
-  try { beat = Number(localStorage.getItem('alfie-story-beat-v4') || 0) % beats.length; } catch (_) {}
-  setInterval(() => {
-    if (document.visibilityState !== 'visible') return;
-    const [speaker, text] = beats[beat]; beat = (beat + 1) % beats.length;
-    try { localStorage.setItem('alfie-story-beat-v4', beat); } catch (_) {}
-    window.Alfie?.discordLine(speaker, text);
-  }, 180000);
+  // Background chatter across the phone's apps now lives in phone-pulse.js.
 })();

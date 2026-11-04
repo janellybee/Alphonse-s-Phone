@@ -2,9 +2,11 @@
 window.STORY_API_URL = '';
 window.STORY_MESSAGE_API_URL = '';
 document.addEventListener('DOMContentLoaded', () => {
-  ['story-engine.js', 'phone-enhancer.js'].forEach((file) => {
+  // async=false keeps them running in this order (the Chapters app needs its arcs; the feed needs the apps).
+  ['story-engine.js', 'phone-enhancer.js', 'story-arcs.js', 'chapters.js', 'phone-pulse.js'].forEach((file) => {
     const script = document.createElement('script');
     script.src = `./${file}`;
+    script.async = false;
     document.body.appendChild(script);
   });
 }, { once: true });
