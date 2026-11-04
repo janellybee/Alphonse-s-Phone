@@ -1,9 +1,5 @@
-# Alphonse-s-Phone
+# Alphonse's Phone
 
-An interactive fictional iPhone and AU story experience for Alphonse “Alfie” Summers.
+A fictional interactive iPhone AU story for Alphonse “Alfie” Summers. Open `index.html` or publish with GitHub Pages.
 
-## Newspaper app
-
-The Borough Beacon is a fictional New York newspaper companion page for the AU. Browse campus, arts, city, and unexplained-story coverage, filter/search articles, like stories, and leave comments that get an in-character local response. Open [`newspaper.html`](./newspaper.html) in a browser or visit `/Alphonse-s-Phone/newspaper.html` after publishing with GitHub Pages.
-
-All articles and replies are fictional and locally scripted; comments stay in the current browser and are not shared. The newspaper is currently a companion page rather than an icon embedded in the iPhone home screen.
+The home screen includes Messages, Discord, Starlight blog, anonymous forums, Ask Alfie, and **The Borough Beacon** newspaper app. Reader replies use the local character dialogue in `story-engine.js`; rotating story beats appear every five minutes. No live AI or API key is used. Newspaper comments and chat are local to the browser. PIN `2106` is a fictional screen lock, not device security.
