@@ -13,12 +13,19 @@
   const offlineLine = (text) =>
     typeof window.localReply === 'function' ? window.localReply(text) : 'sorry my phone is being weird rn, give me a sec';
 
+  // Whatever the reader has lived through in the Chapters app, Alfie has lived through too.
+  function withStory(context = '') {
+    const story = window.StoryEngine?.contextLine?.() || '';
+    if (!story) return context;
+    return context ? `${story}\n\n${context}`.slice(-1200) : story;
+  }
+
   async function ask(channel, text = '', { history, context } = {}) {
     try {
       const res = await fetch(API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ channel, text, history, context })
+        body: JSON.stringify({ channel, text, history, context: withStory(context) })
       });
       if (!res.ok) throw new Error(`status ${res.status}`);
       const data = await res.json();
@@ -38,10 +45,30 @@
   const banner = document.createElement('button');
   banner.className = 'notif-banner';
   banner.type = 'button';
-  banner.innerHTML = '<span class="notif-icon">💬</span><span class="notif-body"><b class="notif-title"></b><span class="notif-text"></span></span><span class="notif-time">now</span>';
+  banner.innerHTML = '<span class="notif-icon"></span><span class="notif-body"><b class="notif-title"></b><span class="notif-text"></span></span><span class="notif-time">now</span>';
   screen?.appendChild(banner);
   let bannerTimer;
-  function notify(title, text, app) {
+  // Lock-screen notification stack: the phone keeps buzzing even while it's locked.
+  const lockStack = document.createElement('div');
+  lockStack.className = 'lock-notifs';
+  lockStack.setAttribute('aria-live', 'polite');
+  $('#lock-screen')?.insertBefore(lockStack, $('#lock-screen .lock-input'));
+  function stackOnLock(title, text, icon) {
+    const item = document.createElement('div');
+    item.className = 'lock-notif';
+    item.innerHTML = '<span class="lock-notif-icon"></span><span><b></b><span></span></span>';
+    item.querySelector('.lock-notif-icon').textContent = icon;
+    item.querySelector('b').textContent = title;
+    item.querySelector('span span').textContent = text;
+    lockStack.prepend(item);
+    while (lockStack.children.length > 3) lockStack.lastChild.remove();
+  }
+  new MutationObserver(() => { if (!isLocked()) lockStack.innerHTML = ''; })
+    .observe($('#lock-screen'), { attributes: true, attributeFilter: ['class'] });
+
+  function notify(title, text, app, icon = '💬') {
+    if (isLocked()) stackOnLock(title, text, icon);
+    banner.querySelector('.notif-icon').textContent = icon;
     banner.querySelector('.notif-title').textContent = title;
     banner.querySelector('.notif-text').textContent = text;
     banner.dataset.app = app;
@@ -53,6 +80,23 @@
     banner.classList.remove('show');
     if (!isLocked() && typeof window.openApp === 'function') window.openApp(banner.dataset.app || 'messages');
   });
+
+  // Unread badges for any app icon. Cleared when that app opens.
+  const badgeCounts = {};
+  function setAppBadge(app, count) {
+    badgeCounts[app] = count;
+    $$(`#home [data-app="${app}"] .icon-tile`).forEach((tile) => {
+      let badge = tile.querySelector('.badge');
+      if (!badge) { badge = document.createElement('span'); badge.className = 'badge'; tile.appendChild(badge); }
+      badge.textContent = count > 99 ? '99+' : String(count);
+      badge.hidden = count < 1;
+    });
+  }
+  const bumpBadge = (app) => setAppBadge(app, (badgeCounts[app] || 0) + 1);
+  new MutationObserver(() => {
+    const open = $('.app-view.active')?.id?.replace('view-', '');
+    if (open && open !== 'messages' && badgeCounts[open]) setAppBadge(open, 0);
+  }).observe(screen, { subtree: true, attributes: true, attributeFilter: ['class'] });
 
   let unread = 0;
   function setBadge(count) {
@@ -176,28 +220,24 @@
       .observe(messagesView, { attributes: true, attributeFilter: ['class'] });
   }
 
-  /* Alfie texts first now and then, like a real friend. Capped per visit to stay sensible. */
+  /* Alfie texts first. phone-pulse.js decides when (every couple of minutes, mixed in with the other apps). */
   let lastActivity = Date.now();
-  let proactiveSent = 0;
-  const PROACTIVE_LIMIT = 4;
-  async function maybeTextFirst() {
-    if (proactiveSent >= PROACTIVE_LIMIT || document.visibilityState !== 'visible') return;
+  function canTextFirst() {
     const last = thread[thread.length - 1];
-    if (last && last.from === 'me') return; // he's mid-reply
-    const quietFor = Date.now() - Math.max(lastActivity, last?.at || 0);
-    if (quietFor < 150000) return;
+    if (last && last.from === 'me') return false; // he's mid-reply
+    if (Date.now() - lastActivity < 45000) return false; // you're actively chatting, let it breathe
     let trailing = 0;
     for (let i = thread.length - 1; i >= 0 && thread[i].from === 'them'; i--) trailing++;
-    if (trailing >= 5) return; // don't spam someone who isn't answering
-    proactiveSent++;
-    const history = thread.slice(-16).map((m) => ({ role: m.from === 'me' ? 'user' : 'assistant', text: m.text }));
-    const reply = await ask('initiate', '', { history });
-    if (reply) await deliver(reply, { proactive: true });
+    return trailing < 6; // don't spam someone who isn't answering
   }
-  const scheduleProactive = (first) => setTimeout(() => {
-    enqueue(maybeTextFirst).then(() => scheduleProactive(false));
-  }, first ? 70000 + Math.random() * 40000 : 240000 + Math.random() * 180000);
-  scheduleProactive(true);
+  async function textFirst(scripted) {
+    if (!canTextFirst()) return false;
+    const history = thread.slice(-16).map((m) => ({ role: m.from === 'me' ? 'user' : 'assistant', text: m.text }));
+    const reply = scripted || await ask('initiate', '', { history });
+    if (!reply) return false;
+    await deliver(reply, { proactive: true });
+    return true;
+  }
 
   renderThread();
 
@@ -363,5 +403,8 @@
     his.textContent = `Anonymous 🎭: ${reply || offlineLine(text)}`;
   });
 
-  window.Alfie = { ask, discordLine, notify };
+  window.Alfie = {
+    ask, discordLine, notify, bumpBadge, isVisible, isLocked,
+    canTextFirst, textFirst: (scripted) => enqueue(() => textFirst(scripted))
+  };
 })();
