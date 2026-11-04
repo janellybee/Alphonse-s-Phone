@@ -1,0 +1,7 @@
+name = "alfie-story-worker"
+main = "worker.js"
+compatibility_date = "2024-09-01"
+
+[vars]
+# Add your secret via: wrangler secret put OPENAI_API_KEY
+# Keep the API key out of the repo. Since this is an example, the key must be set as a secret in Cloudflare.
